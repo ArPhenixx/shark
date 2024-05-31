@@ -1,2 +1,2 @@
-tshark -r fichier.pcap -Y "smb && smb.cmd == 0x73" -T fields -e smb.tree -E separator=, > chemins_smb.txt
+tshark -r votre_fichier.pcap -Y "smb.query_path_inf" -T fields -e smb.query_path_inf > query_path_inf.txt
 
