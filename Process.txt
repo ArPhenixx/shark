@@ -1,13 +1,44 @@
-
 #!/bin/bash
 
-# Nom du fichier de capture
-PCAP_FILE="capture.pcap"
+# Fichier pcap à analyser (modifiez cette variable pour correspondre à votre fichier pcap)
+PCAP_FILE="path/to/yourfile.pcap"
 
-# Fichier de sortie
-OUTPUT_FILE="exe_to_10.0.0.0.txt"
+# Fichier temporaire pour stocker les résultats
+TEMP_FILE="/tmp/executable_requests.txt"
 
-# Filtre TShark pour capturer les fichiers .exe avec destination 10.0.0.0
-tshark -r $PCAP_FILE -Y 'ip.dst == 10.0.0.0 && http.request.uri contains ".exe"' -T fields -e http.host -e http.request.uri > $OUTPUT_FILE
+# Filtre tshark pour capturer uniquement les paquets avec destination 10.0.0.0
+FILTER="ip.dst == 10.0.0.0"
 
-echo "Extraction terminée. Résultats enregistrés dans $OUTPUT_FILE"
+# Extensions de fichiers exécutables à rechercher
+EXECUTABLE_EXTENSIONS="exe|dll|bat|com|msi"
+
+# Fonction pour vérifier les fichiers exécutables dans différents protocoles
+function find_executables {
+    # Analyser le fichier pcap avec tshark
+    tshark -r $PCAP_FILE -Y "$FILTER && $1" -T fields -e ip.src -e ip.dst -e $2 > $TEMP_FILE
+    
+    # Afficher les résultats
+    if [[ -s $TEMP_FILE ]]; then
+        echo "Occurrences de fichiers exécutables dans $3 :"
+        cat $TEMP_FILE
+    else
+        echo "Aucune occurrence de fichiers exécutables trouvée dans $3."
+    fi
+    
+    # Nettoyage du fichier temporaire
+    rm -f $TEMP_FILE
+}
+
+# Vérifier les fichiers exécutables dans les requêtes HTTP
+find_executables "http.request.uri matches \"\.(($EXECUTABLE_EXTENSIONS))\"" 'http.request.uri' "HTTP"
+
+# Vérifier les fichiers exécutables dans les chemins SMB
+find_executables "smb2.filename matches \"\.(($EXECUTABLE_EXTENSIONS))\"" 'smb2.filename' "SMB"
+
+# Vérifier les fichiers exécutables dans les transferts FTP
+find_executables "ftp.request.arg matches \"\.(($EXECUTABLE_EXTENSIONS))\"" 'ftp.request.arg' "FTP"
+
+# Vérifier les fichiers exécutables dans les transferts TFTP
+find_executables "tftp.file.name matches \"\.(($EXECUTABLE_EXTENSIONS))\"" 'tftp.file.name' "TFTP"
+
+# Ajouter d'autres protocoles et champs si nécessaire
