@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Chemin vers le fichier de capture
+capture_file="2021-09-14-agenttesla.pcap"
+
+# Vérifie si le fichier de capture existe
+if [ ! -f "$capture_file" ]; then
+    echo "Le fichier de capture '$capture_file' n'existe pas."
+    exit 1
+fi
+
+# Exécute la commande tshark avec les options appropriées pour filtrer et trier les requêtes
+tshark -r "$capture_file" -T fields -e ip.src -e ip.dst -e tcp.len -e frame.protocols | \
+awk '
+    function check_encapsulation(protocols) {
+        if (match(protocols, /gre|ipsec|pptp|l2tp|sstp|openvpn|vxlan/)) {
+            return "Yes"
+        } else {
+            return "No"
+        }
+    }
+    $3 > 0 {
+        size = $3; 
+        unit = "B"; 
+        if (size >= 1024) {size /= 1024; unit = "KB"} 
+        if (size >= 1024) {size /= 1024; unit = "MB"} 
+        if (size >= 1024) {size /= 1024; unit = "GB"} 
+        encapsulated = check_encapsulation($4)
+        printf "%s\t%s\t%.2f%s\t%s\t%s\n", $1, $2, size, unit, $4, encapsulated
+    }' | \
+sort -n -r -k 3 | uniq -c | \
+awk 'BEGIN {printf "%-15s\t%-15s\t%-10s\t%-s\t%-s\n", "IP Source", "IP Destination", "Taille", "Protocole", "Encapsulé"} 
+    {gsub(/.*:/,"",$4); printf "%-15s\t%-15s\t%-10s\t%-s\t%-s\n", $2, $3, $4, $5, $6}' > requetes_triees.txt
+
+echo "Les requêtes ont été triées et enregistrées dans 'requetes_triees.txt'."
