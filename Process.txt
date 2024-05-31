@@ -1,2 +1,2 @@
 
-tshark -r votre_fichier.pcap -Y 'ip.dst == x.x.x.x && (http.content_type == "application/x-msdownload" || http.content_type == "application/x-msdos-program" || http.content_type == "application/octet-stream" || ftp-data)' -T fields -e frame.number -e ip.src -e ip.dst -e tcp.stream -e http.content_type > executables_to_ip.txt
+tshark -r capture.pcap -Y 'ip.dst == 192.168.1.10 && (http.content_type == "application/x-msdownload" || http.content_type == "application/x-msdos-program" || http.content_type == "application/octet-stream" || ftp-data)' -T fields -e frame.number -e ip.src -e ip.dst -e http.content_type > executables_to_ip.txt
