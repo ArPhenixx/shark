@@ -1,3 +1,2 @@
+tshark -r fichier.pcap -Y "smb && smb.cmd == 0x73" -T fields -e smb.tree -E separator=, > chemins_smb.txt
 
- 
-tshark -r votre_capture.pcap -Y "smb && ip.dst == 10.0.0.0 && smb.req.filename contains \"/.\" && smb.nt_create_andx.fname_len == 1" > capture_filtree.txt
