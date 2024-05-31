@@ -1,2 +1,13 @@
 
-tshark -r capture.pcap -Y 'ip.dst == 192.168.1.10 && (http.content_type == "application/x-msdownload" || http.content_type == "application/x-msdos-program" || http.content_type == "application/octet-stream" || ftp-data)' -T fields -e frame.number -e ip.src -e ip.dst -e http.content_type > executables_to_ip.txt
+#!/bin/bash
+
+# Nom du fichier de capture
+PCAP_FILE="capture.pcap"
+
+# Fichier de sortie
+OUTPUT_FILE="exe_to_10.0.0.0.txt"
+
+# Filtre TShark pour capturer les fichiers .exe avec destination 10.0.0.0
+tshark -r $PCAP_FILE -Y 'ip.dst == 10.0.0.0 && http.request.uri contains ".exe"' -T fields -e http.host -e http.request.uri > $OUTPUT_FILE
+
+echo "Extraction terminée. Résultats enregistrés dans $OUTPUT_FILE"
