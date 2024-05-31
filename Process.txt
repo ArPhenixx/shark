@@ -1,11 +1,3 @@
 
-  #!/bin/bash
-
-file_path="capture.pcapng"
-ip_dst="10.0.0.0"
-output_file="processes.txt"
-
-# Extraire les processus
-tshark -r "$file_path" -Y "ip.dst == $ip_dst" -T fields -e http.user_agent -e ssl.handshake_extensions_server_name | sort -u > "$output_file"
-
-echo "Extraction terminée. Les processus ont été enregistrés dans $output_file"
+ 
+smb && ip.dst == 10.0.0.0 && (smb.req.filename contains ".map" || smb.req.filename contains ".exe" || ...)
