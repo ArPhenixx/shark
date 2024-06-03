@@ -6,4 +6,11 @@ tshark -r fichier.pcap -Y '(ip.src==10.0.0.0 || ip.dst==10.0.0.0) && smb' -T fie
 tshark -r fichier.pcap -Y '(ip.src==10.0.0.0 || ip.dst==10.0.0.0) && smb' -T fields -e ip.src -e ip.dst -e smb.fid -e smb.file | grep -v 'ooo' | sort | uniq -c | awk '{print $2 "\t" $3 "\t" $4 "\t" $1}' > resultat.txt
 
 
-tshark -r fichier.pcap -Y '(ip.src==10.0.0.0 || ip.dst==10.0.0.0) && smb' -T fields -e ip.src -e ip.dst -e smb.fid -e smb.file | grep -v 'ooo' | awk '{split($4, file, "/"); fid = $3 "-" file[length(file)]; print $2 "\t" fid "\t" $5 "\t" $1}' | sort | uniq -c > resultat.txt
+tshark -r fichier.pcap -Y '(ip.src==10.0.0.0 || ip.dst==10.0.0.0) && smb' -T fields -e ip.src -e ip.dst -e smb.fid -e smb.file | grep -v 'ooo' | awk '{split($4, file, "/"); fid = $3 "-" file[length(file)]; print $2 "\t" fid "\t" $5 "\t" $1}' | sort | uniq -c > resultat.
+
+
+
+
+echo -e "IP Source\tIP Destination\tFichier SMB\tNombre de fois" > resultat.txt
+tshark -r fichier.pcap -Y '(ip.src==10.0.0.0 || ip.dst==10.0.0.0) && smb' -T fields -e ip.src -e ip.dst -e smb.file | sort | uniq -c | awk '{print $2 "\t" $3 "\t" $4 "\t" $1}' >> resultat.txt
+
