@@ -2,3 +2,5 @@ tshark -r fichier.pcap -Y '(ip.src==10.0.0.0 || ip.dst==10.0.0.0) && smb' -T fie
 
 
 tshark -r fichier.pcap -Y '(ip.src==10.0.0.0 || ip.dst==10.0.0.0) && smb' -T fields -e ip.src -e ip.dst -e smb.file | grep '\.exe$' | sort | uniq -c | awk '{print $2 "\t" $3 "\t" $4 "\t" $1}' > resultat.txt
+
+tshark -r fichier.pcap -Y '(ip.src==10.0.0.0 || ip.dst==10.0.0.0) && smb' -T fields -e ip.src -e ip.dst -e smb.fid -e smb.file | grep -v 'ATELIER' | sort | uniq -c | awk '{print $2 "\t" $3 "\t" $4 "\t" $1}' > resultat.txt
