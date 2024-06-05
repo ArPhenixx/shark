@@ -20,3 +20,8 @@ tshark -r fichier.pcap -Y "ntlmssp.challenge.target_info.nb_computer_name" -T fi
 
 echo -e "IP Source\tPort Source\tIP Destination\tPort Destination\tNom de Fichier SMB\tNombre de fois" > resultat.txt
 tshark -r fichier.pcap -Y '(ip.src==10.0.0.0 || ip.dst==10.0.0.0) && smb' -T fields -e ip.src -e tcp.srcport -e ip.dst -e tcp.dstport -e smb.file | grep '\.exe$' | sort | uniq -c | awk '{print $2 "\t" $3 "\t" $4 "\t" $5 "\t" $6 "\t" $1}' >> resultat.txt
+
+
+echo -e "IP Source\tPort Source\tIP Destination\tPort Destination\tNom de Fichier SMB\tNombre de fois" > resultat.txt
+tshark -r fichier.pcap -T fields -e ip.src -e tcp.srcport -e ip.dst -e tcp.dstport -e smb.file -e http.file_data -e data-text-lines | grep '\.exe' | sort | uniq -c | awk '{print $2 "\t" $3 "\t" $4 "\t" $5 "\t" $6 "\t" $1}' >> resultat.txt
+
