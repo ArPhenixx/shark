@@ -25,3 +25,7 @@ tshark -r fichier.pcap -Y '(ip.src==10.0.0.0 || ip.dst==10.0.0.0) && smb' -T fie
 echo -e "IP Source\tPort Source\tIP Destination\tPort Destination\tNom de Fichier SMB\tNombre de fois" > resultat.txt
 tshark -r fichier.pcap -T fields -e ip.src -e tcp.srcport -e ip.dst -e tcp.dstport -e smb.file -e http.file_data -e data-text-lines | grep '\.exe' | sort | uniq -c | awk '{print $2 "\t" $3 "\t" $4 "\t" $5 "\t" $6 "\t" $1}' >> resultat.txt
 
+
+
+echo -e "IP Source\tPort Source\tIP Destination\tPort Destination\tNombre de fois" > resultat.txt
+tshark -r fichier.pcap -Y 'tcp.flags.syn==1 && tcp.flags.ack==0 && (ip.src==10.0.0.0 || ip.dst==10.0.0.0)' -T fields -e ip.src -e tcp.srcport -e ip.dst -e tcp.dstport | sort | uniq -c | awk '{print $2 "\t" $3 "\t" $4 "\t" $5 "\t" $1}' >> resultat.txt
