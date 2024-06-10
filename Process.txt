@@ -38,3 +38,6 @@ tshark -r fichier.pcap -T fields -e frame.protocols | tr ':' '\n' | sort | uniq 
 
 tshark -r yourfile.pcap -T fields -e tcp.port -e ip.src -e ip.dst -e tcp.stream -e _ws.col.Info > output.txt
 
+
+tshark -r yourfile.pcap -T fields -E separator=, -E occurrence=f -e frame.number -e ip.src -e _ws.col.Protocol -e frame.coloring_rule > output.csv
+
