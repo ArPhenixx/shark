@@ -35,3 +35,6 @@ tshark -r fichier.pcap -Y 'tcp.flags.syn==1 && tcp.flags.ack==0 && (ip.src==10.0
 echo -e "Protocole\tNombre de fois" > protocols_resultat.txt
 tshark -r fichier.pcap -T fields -e frame.protocols | tr ':' '\n' | sort | uniq -c | awk '{print $2 "\t" $1}' >> protocols_resultat.txt
 
+
+tshark -r yourfile.pcap -T fields -e tcp.port -e ip.src -e ip.dst -e tcp.stream -e _ws.col.Info > output.txt
+
