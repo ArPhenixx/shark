@@ -41,3 +41,4 @@ tshark -r yourfile.pcap -T fields -e tcp.port -e ip.src -e ip.dst -e tcp.stream 
 
 tshark -r yourfile.pcap -T fields -E separator=, -E occurrence=f -e frame.number -e ip.src -e _ws.col.Protocol -e frame.coloring_rule > output.csv
 
+sort yourfile.csv | awk '{count[$0]++} END {for (line in count) print line, (count[line] > 1 ? "x" count[line] : "")}' > yourfile_modified.csv
